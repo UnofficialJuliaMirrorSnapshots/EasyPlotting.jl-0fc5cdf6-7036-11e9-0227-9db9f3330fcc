@@ -57,7 +57,7 @@ using EasyPlotting; retry(EasyPlotting.easymain::Function, delays=ExponentialBac
 
 Press enter. If this is your first time using this package, it could take 20-30 min for the full installation process.
 
-***Kindly take note that pressing the 'Plot' button the first time may give an error. Kindly ignore the error message and try again, it will work from the second time.***
+**Kindly take note that pressing the 'Plot' button the first time may give an error. Kindly ignore the error message and try again, it will work from the second time.**
 
 If you have already installed this EasyPlotting.jl package, you may prefer to launch the GUI by copying and pasting this instead at the Julia prompt:
 
@@ -76,6 +76,25 @@ using Pkg; Pkg.update("EasyPlotting"); Pkg.build("EasyPlotting")
 This fetches the latest updates into your local system. Then simply use the package as per normal.
 
 ## Linux Usage:
+
+This is the complete instructions for installing julia and setting up EasyPlotting.jl package for Julia-1.2.0 running Arch Linux using wayland as the display server protocol. Please adapt these instructions according to your specific linux distribution and setup. Detailed explanations of these instructions are also given below for your reference.
+
+### Complete Installation Instructions:
+
+```
+[srgk26@ArchLinux ~]$ wget https://julialang-s3.julialang.org/bin/linux/x64/1.2/julia-1.2.0-linux-x86_64.tar.gz ## Download Julia-1.2.0 into $HOME folder
+[srgk26@ArchLinux ~]$ tar -xvzf julia-1.2.0-linux-x86_64.tar.gz && rm julia-1.2.0-linux-x86_64.tar.gz ## Extract Julia-1.2.0 and remove tarball
+[srgk26@ArchLinux ~]$ sudo ln -s $HOME/julia-1.2.0/bin/julia /usr/local/bin/julia ## Create symbolic link of the julia binary into a folder in the system PATH
+[srgk26@ArchLinux ~]$ sudo -- sh -c 'echo "export QT_QPA_PLATFORM=wayland" >> /etc/environment && source /etc/environment; pacman -S gtk3 python-pip; pip3 install seaborn' ## Combining the commands that require root privileges together
+[srgk26@ArchLinux ~]$ echo 'backend: tkagg' >> $HOME/.config/matplotlib/matplotlibrc ## Set 'TkAgg' as matplotlib plotting backend
+[srgk26@ArchLinux ~]$ julia ## Enter interactive julia REPL session
+julia> using Pkg; if haskey(Pkg.installed(), "EasyPlotting") == false; Pkg.add(["PlotlyJS", "ORCA", "ImageMagick", "EasyPlotting"]); end ## Re-installing dependencies manually due to non-detection of these pkgs installed from Manifest.toml in path
+       using EasyPlotting; retry(EasyPlotting.easymain::Function, delays=ExponentialBackOff(n=5, first_delay=5, max_delay=10))() ## Retry function in case of an IOError when launching Blink
+```
+
+**Kindly take note that pressing the 'Plot' button the first time may give an error. Kindly ignore the error message and try again, it will work from the second time.**
+
+### Detailed explanations step-by-step:
 
 Linux users, please refrain from installing Julia with your respective package managers. Julia compiled from source using your package manager produces build error (for the 'Arpack' dependency) when building this EasyPlotting.jl package, which affects other downstream processes. Instead:
 
@@ -97,37 +116,24 @@ Replace 'julia-1.2.0' with the respective folder name. [Click here](https://juli
 * For Fedora and other yum based package managers, do `sudo dnf install gtk3`.<br>
 * For RHEL/CentOS and other yum-based package managers, do `sudo yum install gtk3`.
 
-5. You would also need the python3 seaborn package installed. Firstly, if not already installed, install 'pip3' (the python3 package manager) using your respective package manager:
+5. You would also need python3, the python3 seaborn package, and the 'TkAgg' matplotlib backend installed. Firstly, if not already installed, install 'pip3' (the python3 package manager) and the 'TkAgg' backend using your package manager:
 
-* For Arch Linux based distributions, do `sudo pacman -S python-pip`.<br>
-* For Debian based distributions, do `sudo apt install python3-pip`.<br>
-* For Fedora and other yum based package managers, do `sudo dnf install python3-pip`.<br>
-* For RHEL/CentOS and other yum-based package managers, do `sudo yum install python3-pip`.
+* For Arch Linux based distributions, do `sudo pacman -S python python-pip`.<br>
+* For Debian based distributions, do `sudo apt install python3 python3-tk python3-pip`.<br>
+* For Fedora/RHEL/CentOS based distributions, do `sudo dnf install python3 python3-tkinter python3-pip`.
 
 To install seaborn, do either `sudo pip3 install seaborn` to install system-wide or `python3 -m pip install --user seaborn` to install at user level.
 
-6. Then run Julia by simply typing `julia` in the terminal. Copy and paste the code below to install and launch EasyPlotting from within the Julia REPL prompt in the terminal:
+6. You would need to set 'TkAgg' as the default matplotlib plotting backend with: `echo 'backend: tkagg' >> $HOME/.config/matplotlib/matplotlibrc`
+
+7. Then run Julia by simply typing `julia` in the terminal. Copy and paste the code below to install and launch EasyPlotting from within the Julia REPL prompt in the terminal:
 
 ```
 using Pkg; if haskey(Pkg.installed(), "EasyPlotting") == false; Pkg.add(["PlotlyJS", "ORCA", "ImageMagick", "EasyPlotting"]); end ## Re-installing dependencies manually due to non-detection of these pkgs installed from Manifest.toml in path
 using EasyPlotting; retry(EasyPlotting.easymain::Function, delays=ExponentialBackOff(n=5, first_delay=5, max_delay=10))() ## Retry function in case of an IOError when launching Blink
 ```
 
-As an example, for Julia-1.2.0 running Arch Linux using wayland as the display server protocol:
-
-```
-[srgk26@ArchLinux ~]$ wget https://julialang-s3.julialang.org/bin/linux/x64/1.2/julia-1.2.0-linux-x86_64.tar.gz ## Download Julia-1.2.0 into $HOME folder
-[srgk26@ArchLinux ~]$ tar -xvzf julia-1.2.0-linux-x86_64.tar.gz && rm julia-1.2.0-linux-x86_64.tar.gz ## Extract Julia-1.2.0 and remove tarball
-[srgk26@ArchLinux ~]$ sudo ln -s $HOME/julia-1.2.0/bin/julia /usr/local/bin/julia ## Create symbolic link of the julia binary into a folder in the system PATH
-[srgk26@ArchLinux ~]$ sudo -- sh -c 'echo "export QT_QPA_PLATFORM=wayland" >> /etc/environment && source /etc/environment; pacman -S gtk3 python-pip; pip3 install seaborn' ## Combining the commands that require root privileges together
-[srgk26@ArchLinux ~]$ julia ## Enter interactive julia REPL session
-julia> using Pkg; if haskey(Pkg.installed(), "EasyPlotting") == false; Pkg.add(["PlotlyJS", "ORCA", "ImageMagick", "EasyPlotting"]); end ## Re-installing dependencies manually due to non-detection of these pkgs installed from Manifest.toml in path
-       using EasyPlotting; retry(EasyPlotting.easymain::Function, delays=ExponentialBackOff(n=5, first_delay=5, max_delay=10))() ## Retry function in case of an IOError when launching Blink
-```
-
-***If the EasyPlotting package precompile stage fails in the terminal, it is likely a problem with your linux setup or hardware. If you have access to a SSH server, you could try to use X11 port forwarding and run the GUI from the server instead. You could also try launching EasyPlotting from within the Juno environment ([check this out](http://docs.junolab.org/v0.6/index.html)).***
-
-***Kindly take note that pressing the 'Plot' button the first time may give an error. Kindly ignore the error message and try again, it will work from the second time.***
+**Kindly take note that pressing the 'Plot' button the first time may give an error. Kindly ignore the error message and try again, it will work from the second time.**
 
 If you have already installed this EasyPlotting.jl package, you may prefer to launch the GUI by copying and pasting this instead at the Julia prompt:
 
